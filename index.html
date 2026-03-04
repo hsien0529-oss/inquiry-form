@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>產品詢問表單 - 慶豐自動控制</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:linear-gradient(135deg,#f8fafc,#eff6ff,#eef2ff);min-height:100vh;color:#1e293b}
+.container{max-width:640px;margin:0 auto;padding:16px}
+.header{text-align:center;margin-bottom:24px;padding-top:20px}
+.logo{display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:50px;padding:8px 20px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:12px}
+.logo span{font-weight:700;color:#334155;letter-spacing:1px}
+h1{font-size:1.75rem;font-weight:800;color:#1e293b;margin-bottom:6px}
+.subtitle{color:#64748b;font-size:.875rem}
+.card{background:#fff;border-radius:24px;padding:32px;box-shadow:0 10px 40px rgba(148,163,184,.15)}
+.steps{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding:0 8px}
+.step-item{display:flex;flex-direction:column;align-items:center;flex:0}
+.step-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.875rem;font-weight:700;transition:all .3s}
+.step-circle.active{background:#2563eb;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.3);transform:scale(1.1)}
+.step-circle.done{background:#10b981;color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.3)}
+.step-circle.pending{background:#f1f5f9;color:#94a3b8}
+.step-label{font-size:.7rem;margin-top:6px;font-weight:500;color:#94a3b8}
+.step-label.active{color:#2563eb}
+.step-line{flex:1;height:2px;margin:0 8px 18px;border-radius:2px;background:#e2e8f0}
+.step-line.done{background:#10b981}
+.section-title{font-size:1.5rem;font-weight:700;color:#1e293b;margin-bottom:4px}
+.section-desc{color:#64748b;font-size:.875rem;margin-bottom:24px}
+.badge{display:inline-block;padding:2px 10px;border-radius:50px;background:#dbeafe;color:#1d4ed8;font-size:.8rem;font-weight:500;margin-right:8px}
+.required{color:#ef4444}
+label{display:block;font-size:.875rem;font-weight:600;color:#334155;margin-bottom:6px}
+input[type=text],input[type=email],input[type=tel],textarea{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:1rem;outline:none;transition:border .2s;background:#fff;font-family:inherit}
+input:focus,textarea:focus{border-color:#2563eb}
+input.error,textarea.error{border-color:#f87171}
+.error-msg{color:#ef4444;font-size:.75rem;margin-top:4px;padding-left:4px}
+.field{margin-bottom:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.tag{padding:6px 14px;border-radius:10px;font-size:.85rem;border:1.5px solid #e2e8f0;background:#fff;color:#475569;cursor:pointer;transition:all .2s;user-select:none}
+.tag:hover{border-color:#93c5fd}
+.tag.selected{background:#2563eb;color:#fff;border-color:#2563eb}
+.tag.amber.selected{background:#f59e0b;color:#fff;border-color:#f59e0b}
+.type-card{display:flex;align-items:flex-start;gap:16px;padding:20px;border-radius:16px;border:2px solid #e2e8f0;background:#fff;cursor:pointer;transition:all .2s;text-align:left;width:100%;margin-bottom:12px}
+.type-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:scale(1.005);border-color:#93c5fd}
+.type-card.selected{border-color:#2563eb;background:#eff6ff;box-shadow:0 4px 16px rgba(37,99,235,.15)}
+.type-icon{font-size:1.8rem;margin-top:2px;flex-shrink:0}
+.type-title{font-weight:700;font-size:1.05rem;color:#1e293b}
+.type-desc{color:#64748b;font-size:.85rem;margin-top:2px}
+.review-box{background:#f8fafc;border-radius:16px;padding:24px}
+.review-section{margin-bottom:16px}
+.review-section h3{font-size:.8rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #f1f5f9}
+.review-row{display:flex;justify-content:space-between;font-size:.875rem;padding:4px 0}
+.review-row .label{color:#64748b}
+.review-row .value{color:#1e293b;font-weight:500;text-align:right;max-width:60%}
+.nav{display:flex;justify-content:space-between;margin-top:28px;padding-top:20px;border-top:1px solid #f1f5f9}
+.btn{padding:12px 28px;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;font-family:inherit}
+.btn-back{background:#fff;color:#475569;border:2px solid #e2e8f0}
+.btn-back:hover{background:#f8fafc}
+.btn-next{background:#2563eb;color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.btn-next:hover{background:#1d4ed8;box-shadow:0 6px 20px rgba(37,99,235,.4)}
+.btn-submit{background:#059669;color:#fff;box-shadow:0 4px 12px rgba(5,150,105,.3)}
+.btn-submit:hover{background:#047857}
+.btn-submit:disabled{background:#94a3b8;cursor:wait;box-shadow:none}
+.submit-error{margin-top:12px;padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;color:#dc2626;font-size:.875rem}
+.success-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.success-card{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.1);padding:48px 40px;max-width:420px;width:100%;text-align:center}
+.success-icon{width:80px;height:80px;background:#d1fae5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2.2rem}
+.success-card h2{font-size:1.5rem;font-weight:700;margin-bottom:12px}
+.success-card p{color:#64748b;line-height:1.6;margin-bottom:20px}
+.success-card .highlight{font-weight:700;color:#2563eb}
+.inquiry-id{background:#eff6ff;border-radius:12px;padding:12px;font-size:.875rem;color:#1d4ed8}
+.inquiry-id span{font-family:monospace;font-weight:700}
+.reset-link{display:inline-block;margin-top:20px;color:#2563eb;font-size:.875rem;font-weight:500;cursor:pointer;text-decoration:none}
+.reset-link:hover{text-decoration:underline}
+.footer{text-align:center;font-size:.75rem;color:#94a3b8;margin-top:20px;padding-bottom:20px}
+.hint{font-size:.75rem;color:#94a3b8;margin-top:4px;padding-left:4px}
+@media(max-width:480px){.card{padding:20px}.row{grid-template-columns:1fr}h1{font-size:1.4rem}.success-card{padding:32px 24px}}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+var GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfhZZn0wpTZBa3xpOXgwE0_7PQzfszrx2mn46JJWN8JOQbdUidhcmRltzwZ7rDf-uoUg/exec";
+
+var PRODUCT_CATEGORIES = ["PLC / 可程式控制器","變頻器 / 伺服驅動","感測器 / 開關","繼電器 / 接觸器","斷路器 / 保護設備","電源供應器","人機介面 (HMI)","電線電纜 / 端子","其他"];
+var BRANDS = ["士林","Delta 台達電","Schneider 施耐德","東元","富士","Omron 歐姆龍","Mitsubishi 三菱","其他"];
+var URGENCY = ["急件（1-3天）","一般（1-2週）","預估備貨","僅詢價參考"];
+
+var state = {
+  step: 0,
+  customerType: "",
+  companyName: "", contactName: "", phone: "", email: "", lineId: "",
+  taxId: "", industry: "", shopArea: "", mainBrands: [],
+  personalUse: "", productCategory: [], brand: "", partNumber: "",
+  qty: "", urgency: "", budget: "", note: "", hasAccount: "",
+  submitted: false, submitting: false, submitError: "", errors: {}
+};
+
+var typeLabels = { factory: "工廠 / 製造業用戶", reseller: "經銷 / 二次配銷商", individual: "個人 / 一般用戶" };
+
+function $(id) { return document.getElementById(id); }
+function render() { $("app").innerHTML = state.submitted ? renderSuccess() : renderForm(); bindEvents(); }
+
+function set(key, val) { state[key] = val; if (state.errors[key]) { delete state.errors[key]; } render(); }
+function toggleArr(key, val) {
+  var arr = state[key];
+  var i = arr.indexOf(val);
+  if (i >= 0) arr.splice(i, 1); else arr.push(val);
+  render();
+}
+
+function validate() {
+  var e = {};
+  if (state.step === 1) {
+    if (!state.contactName.trim()) e.contactName = "請填寫聯絡人姓名";
+    if (!state.phone.trim()) e.phone = "請填寫聯絡電話";
+    if (state.customerType !== "individual" && !state.companyName.trim()) e.companyName = "請填寫公司 / 店家名稱";
+  }
+  if (state.step === 2) {
+    if (state.productCategory.length === 0) e.productCategory = "請至少選擇一個產品類別";
+  }
+  state.errors = e;
+  render();
+  return Object.keys(e).length === 0;
+}
+
+function nextStep() { if (validate()) { state.step++; render(); window.scrollTo(0, 0); } }
+function prevStep() { state.step--; render(); window.scrollTo(0, 0); }
+function selectType(t) { state.customerType = t; state.step = 1; render(); window.scrollTo(0, 0); }
+
+function submitForm() {
+  if (!validate()) return;
+  state.submitting = true; state.submitError = ""; render();
+
+  var payload = {
+    timestamp: new Date().toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
+    customerType: typeLabels[state.customerType] || state.customerType,
+    companyName: state.companyName, contactName: state.contactName,
+    phone: state.phone, email: state.email, lineId: state.lineId,
+    taxId: state.taxId, industry: state.industry, shopArea: state.shopArea,
+    mainBrands: state.mainBrands.join(", "), personalUse: state.personalUse,
+    hasAccount: state.hasAccount, productCategory: state.productCategory.join(", "),
+    brand: state.brand, partNumber: state.partNumber, qty: state.qty,
+    budget: state.budget, urgency: state.urgency, note: state.note
+  };
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST", mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).then(function() {
+    state.submitted = true; state.submitting = false; render();
+  }).catch(function() {
+    state.submitError = "送出失敗，請檢查網路連線後再試一次。"; state.submitting = false; render();
+  });
+}
+
+function resetForm() {
+  state = { step:0, customerType:"", companyName:"", contactName:"", phone:"", email:"", lineId:"", taxId:"", industry:"", shopArea:"", mainBrands:[], personalUse:"", productCategory:[], brand:"", partNumber:"", qty:"", urgency:"", budget:"", note:"", hasAccount:"", submitted:false, submitting:false, submitError:"", errors:{} };
+  render();
+}
+
+function renderStepBar() {
+  var names = ["客戶類型","基本資料","產品需求","確認送出"];
+  var h = '<div class="steps">';
+  for (var i = 0; i < names.length; i++) {
+    var cls = i < state.step ? "done" : (i === state.step ? "active" : "pending");
+    h += '<div class="step-item"><div class="step-circle ' + cls + '">' + (i < state.step ? "✓" : (i+1)) + '</div><div class="step-label' + (i === state.step ? ' active' : '') + '">' + names[i] + '</div></div>';
+    if (i < names.length - 1) h += '<div class="step-line' + (i < state.step ? ' done' : '') + '"></div>';
+  }
+  return h + '</div>';
+}
+
+function renderTags(items, selected, isArray, amberClass) {
+  var h = '<div class="tags">';
+  for (var i = 0; i < items.length; i++) {
+    var sel = isArray ? (selected.indexOf(items[i]) >= 0) : (selected === items[i]);
+    h += '<div class="tag' + (sel ? ' selected' : '') + (amberClass && sel ? ' amber' : '') + '" data-val="' + items[i] + '">' + items[i] + '</div>';
+  }
+  return h + '</div>';
+}
+
+function inp(id, placeholder, val, type) {
+  type = type || "text";
+  return '<input type="' + type + '" id="inp_' + id + '" class="' + (state.errors[id] ? 'error' : '') + '" placeholder="' + placeholder + '" value="' + (val||'').replace(/"/g,'&quot;') + '">' + (state.errors[id] ? '<div class="error-msg">' + state.errors[id] + '</div>' : '');
+}
+
+function renderStep0() {
+  var types = [
+    { id:"factory", icon:"🏭", title:"工廠 / 製造業用戶", desc:"生產線設備採購、專案規劃、長期合約供貨" },
+    { id:"reseller", icon:"🏪", title:"經銷 / 二次配銷商", desc:"批量進貨、代理經銷、門市零售備貨" },
+    { id:"individual", icon:"👤", title:"個人 / 一般用戶", desc:"維修替換、小量採購、個人專案使用" }
+  ];
+  var h = '<div class="section-title">您好！歡迎洽詢</div><div class="section-desc">請先選擇您的客戶類型，我們將為您提供最適合的服務方案</div>';
+  for (var i = 0; i < types.length; i++) {
+    var t = types[i];
+    h += '<div class="type-card' + (state.customerType === t.id ? ' selected' : '') + '" data-type="' + t.id + '"><div class="type-icon">' + t.icon + '</div><div><div class="type-title">' + t.title + '</div><div class="type-desc">' + t.desc + '</div></div></div>';
+  }
+  return h;
+}
+
+function renderStep1() {
+  var ct = state.customerType;
+  var h = '<div class="section-title">基本資料</div><div class="section-desc"><span class="badge">' + typeLabels[ct] + '</span>帶 <span class="required">*</span> 為必填欄位</div>';
+
+  if (ct !== "individual") {
+    h += '<div class="field"><label>' + (ct === "factory" ? "公司名稱" : "店家名稱") + ' <span class="required">*</span></label>' + inp("companyName", ct === "factory" ? "例：大同股份有限公司" : "例：全成電料行", state.companyName) + '</div>';
+  }
+
+  h += '<div class="row"><div class="field"><label>聯絡人姓名 <span class="required">*</span></label>' + inp("contactName","您的姓名",state.contactName) + '</div>';
+  h += '<div class="field"><label>聯絡電話 <span class="required">*</span></label>' + inp("phone","0912-345-678",state.phone,"tel") + '</div></div>';
+
+  h += '<div class="row"><div class="field"><label>Email</label>' + inp("email","email@example.com",state.email,"email") + '</div>';
+  h += '<div class="field"><label>LINE ID</label>' + inp("lineId","方便後續聯繫",state.lineId) + '</div></div>';
+
+  if (ct === "factory") {
+    h += '<div class="field"><label>統一編號</label>' + inp("taxId","8 碼統編（開立發票用）",state.taxId) + '</div>';
+    h += '<div class="field"><label>產業別</label>' + inp("industry","例：半導體、食品加工、機械製造...",state.industry) + '</div>';
+  }
+  if (ct === "reseller") {
+    h += '<div class="field"><label>統一編號</label>' + inp("taxId","8 碼統編",state.taxId) + '</div>';
+    h += '<div class="field"><label>主要經營區域</label>' + inp("shopArea","例：中部地區、彰化市區...",state.shopArea) + '</div>';
+    h += '<div class="field"><label>目前經營品牌</label>' + renderTags(BRANDS, state.mainBrands, true) + '</div>';
+  }
+  if (ct === "individual") {
+    h += '<div class="field"><label>用途說明</label>' + inp("personalUse","例：家用維修、學校專題、個人工作室...",state.personalUse) + '</div>';
+  }
+
+  h += '<div class="field"><label>是否為既有客戶？</label><div class="tags">';
+  var acctOpts = ["是，已有往來帳戶","否，首次洽詢"];
+  for (var i = 0; i < acctOpts.length; i++) {
+    h += '<div class="tag' + (state.hasAccount === acctOpts[i] ? ' selected' : '') + '" data-acct="' + acctOpts[i] + '">' + acctOpts[i] + '</div>';
+  }
+  h += '</div></div>';
+  return h;
+}
+
+function renderStep2() {
+  var h = '<div class="section-title">產品需求</div><div class="section-desc">請告訴我們您需要的產品資訊</div>';
+  h += '<div class="field"><label>產品類別 <span class="required">*</span></label>' + renderTags(PRODUCT_CATEGORIES, state.productCategory, true) + (state.errors.productCategory ? '<div class="error-msg">' + state.errors.productCategory + '</div>' : '') + '</div>';
+  h += '<div class="field"><label>品牌偏好</label>' + renderTags(BRANDS, state.brand, false) + '</div>';
+  h += '<div class="field"><label>產品型號 / 料號</label>' + inp("partNumber","例：6ES7 214-1AG40-0XB0 或 FX5U-32MT/ES",state.partNumber) + '<div class="hint">如有多筆可用逗號分隔，或於備註欄補充</div></div>';
+  h += '<div class="row"><div class="field"><label>需求數量</label>' + inp("qty","例：5 pcs",state.qty) + '</div>';
+  h += '<div class="field"><label>預算範圍</label>' + inp("budget","例：5 萬以內",state.budget) + '</div></div>';
+  h += '<div class="field"><label>急迫程度</label>' + renderTags(URGENCY, state.urgency, false, true) + '</div>';
+  h += '<div class="field"><label>備註說明</label><textarea id="inp_note" rows="3" placeholder="其他補充資訊，例如：需要技術支援、希望安排現場勘查、需要替代料建議...">' + (state.note||'') + '</textarea></div>';
+  return h;
+}
+
+function renderStep3() {
+  var ct = state.customerType;
+  function row(label, val) {
+    if (!val || (Array.isArray(val) && val.length === 0)) return "";
+    var v = Array.isArray(val) ? val.join("、") : val;
+    return '<div class="review-row"><span class="label">' + label + '</span><span class="value">' + v + '</span></div>';
+  }
+  var h = '<div class="section-title">確認資料</div><div class="section-desc">請確認以下資料無誤後送出</div><div class="review-box">';
+  h += '<div class="review-section"><h3>客戶資訊</h3>';
+  h += row("客戶類型", typeLabels[ct]);
+  if (ct !== "individual") h += row(ct === "factory" ? "公司名稱" : "店家名稱", state.companyName);
+  h += row("聯絡人", state.contactName) + row("電話", state.phone) + row("Email", state.email) + row("LINE ID", state.lineId) + row("統一編號", state.taxId);
+  if (ct === "factory") h += row("產業別", state.industry);
+  if (ct === "reseller") { h += row("經營區域", state.shopArea) + row("經營品牌", state.mainBrands); }
+  if (ct === "individual") h += row("用途", state.personalUse);
+  h += row("既有客戶", state.hasAccount) + '</div>';
+  h += '<div class="review-section"><h3>產品需求</h3>';
+  h += row("產品類別", state.productCategory) + row("品牌", state.brand) + row("型號 / 料號", state.partNumber) + row("數量", state.qty) + row("預算", state.budget) + row("急迫程度", state.urgency) + row("備註", state.note);
+  h += '</div></div>';
+  if (state.submitError) h += '<div class="submit-error">' + state.submitError + '</div>';
+  return h;
+}
+
+function renderForm() {
+  var stepContent = [renderStep0, renderStep1, renderStep2, renderStep3][state.step]();
+  var nav = '';
+  if (state.step > 0) {
+    nav = '<div class="nav"><button class="btn btn-back" onclick="prevStep()">← 上一步</button>';
+    if (state.step < 3) {
+      nav += '<button class="btn btn-next" onclick="nextStep()">下一步 →</button>';
+    } else {
+      nav += '<button class="btn btn-submit" onclick="submitForm()"' + (state.submitting ? ' disabled' : '') + '>' + (state.submitting ? '送出中...' : '確認送出 ✓') + '</button>';
+    }
+    nav += '</div>';
+  }
+
+  return '<div class="container"><div class="header"><div class="logo"><span>⚡</span><span>慶豐自動控制</span></div><h1>產品詢問表單</h1><p class="subtitle">請填寫以下資料，讓我們能更快速地為您報價與服務</p></div><div class="card">' + renderStepBar() + stepContent + nav + '</div><p class="footer">資料僅供本公司業務聯繫使用，不會提供給第三方</p></div>';
+}
+
+function renderSuccess() {
+  var id = "INQ-" + Date.now().toString(36).toUpperCase();
+  return '<div class="success-page"><div class="success-card"><div class="success-icon">✅</div><h2>詢問單已送出！</h2><p>感謝您的洽詢，我們的業務團隊將在<span class="highlight"> 1 個工作日內 </span>透過 LINE 或電話與您聯繫。</p><div class="inquiry-id">📋 您的詢問編號：<span>' + id + '</span></div><a class="reset-link" onclick="resetForm()">再填一份新的詢問單</a></div></div>';
+}
+
+function bindEvents() {
+  // Type cards
+  document.querySelectorAll(".type-card").forEach(function(el) {
+    el.addEventListener("click", function() { selectType(this.dataset.type); });
+  });
+
+  // Input fields
+  ["companyName","contactName","phone","email","lineId","taxId","industry","shopArea","personalUse","partNumber","qty","budget"].forEach(function(id) {
+    var el = $("inp_" + id);
+    if (el) el.addEventListener("input", function() { state[id] = this.value; });
+  });
+  var noteEl = $("inp_note");
+  if (noteEl) noteEl.addEventListener("input", function() { state.note = this.value; });
+
+  // Product category tags
+  if (state.step === 2) {
+    document.querySelectorAll(".field").forEach(function(field) {
+      var label = field.querySelector("label");
+      if (!label) return;
+      var text = label.textContent;
+
+      if (text.indexOf("產品類別") >= 0) {
+        field.querySelectorAll(".tag").forEach(function(tag) {
+          tag.addEventListener("click", function() { toggleArr("productCategory", this.dataset.val); });
+        });
+      }
+      if (text.indexOf("品牌偏好") >= 0) {
+        field.querySelectorAll(".tag").forEach(function(tag) {
+          tag.addEventListener("click", function() {
+            state.brand = (state.brand === this.dataset.val) ? "" : this.dataset.val;
+            render();
+          });
+        });
+      }
+      if (text.indexOf("急迫程度") >= 0) {
+        field.querySelectorAll(".tag").forEach(function(tag) {
+          tag.addEventListener("click", function() { set("urgency", this.dataset.val); });
+        });
+      }
+    });
+  }
+
+  // Reseller brands
+  if (state.step === 1 && state.customerType === "reseller") {
+    document.querySelectorAll(".field").forEach(function(field) {
+      var label = field.querySelector("label");
+      if (label && label.textContent.indexOf("經營品牌") >= 0) {
+        field.querySelectorAll(".tag").forEach(function(tag) {
+          tag.addEventListener("click", function() { toggleArr("mainBrands", this.dataset.val); });
+        });
+      }
+    });
+  }
+
+  // Account tags
+  document.querySelectorAll("[data-acct]").forEach(function(tag) {
+    tag.addEventListener("click", function() { set("hasAccount", this.dataset.acct); });
+  });
+}
+
+render();
+</script>
+</body>
+</html>
